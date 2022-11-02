@@ -1,37 +1,145 @@
-import _ from "lodash";
-import "./style.css";
-import Icon from "./icon.png";
-import Data from "./data.xml";
-import Notes from "./data.csv";
-import toml from './data.toml';
-import yaml from './data.yaml';
-import json from './data.json5';
+// SELECT ELEMENTS
+const form = document.getElementById("todoform");
+const todoInput = document.getElementById("newtodo");
+const todosListEl = document.getElementById("todos-list");
+const notificationEl = document.querySelector(".notification");
 
-console.log(toml.title); // output `TOML Example`
-console.log(toml.owner.name); // output `Tom Preston-Werner`
+// VARS
+let todos = JSON.parse(localStorage.getItem("todos")) || [];
+let EditTodoId = -1;
 
-console.log(yaml.title); // output `YAML Example`
-console.log(yaml.owner.name); // output `Tom Preston-Werner`
+// 1st render
+renderTodos();
 
-console.log(json.title); // output `JSON5 Example`
-console.log(json.owner.name); // output `Tom Preston-Werner`
+// FORM SUBMIT
+form.addEventListener("submit", function (event) {
+  event.preventDefault();
 
-function component() {
-  const element = document.createElement("div");
+  saveTodo();
+  renderTodos();
+  localStorage.setItem("todos", JSON.stringify(todos));
+});
 
-  // Lodash, now imported by this script
-  element.innerHTML = _.join(["Hello", "webpack"], " ");
-  element.classList.add("hello");
-  // Add the image to our existing div.
-  const myIcon = new Image();
-  myIcon.src = Icon;
+// SAVE TODO
+function saveTodo() {
+  const todoValue = todoInput.value;
 
-  element.appendChild(myIcon);
+  // check if the todo is empty
+  const isEmpty = todoValue === "";
 
-  console.log(Data);
-  console.log(Notes);
+  // check for duplicate todos
+  const isDuplicate = todos.some(
+    (todo) => todo.value.toUpperCase() === todoValue.toUpperCase()
+  );
 
-  return element;
+  if (isEmpty) {
+    showNotification("Todo's input is empty");
+  } else if (isDuplicate) {
+    showNotification("Todo already exists!");
+  } else {
+    if (EditTodoId >= 0) {
+      todos = todos.map((todo, index) => ({
+        ...todo,
+        value: index === EditTodoId ? todoValue : todo.value,
+      }));
+      EditTodoId = -1;
+    } else {
+      todos.push({
+        value: todoValue,
+        checked: false,
+        color: "#" + Math.floor(Math.random() * 16777215).toString(16),
+      });
+    }
+
+    todoInput.value = "";
+  }
 }
 
-document.body.appendChild(component());
+// RENDER TODOS
+function renderTodos() {
+  if (todos.length === 0) {
+    todosListEl.innerHTML = "<center>Nothing to do!</center>";
+    return;
+  }
+
+  // CLEAR ELEMENT BEFORE A RE-RENDER
+  todosListEl.innerHTML = "";
+
+  // RENDER TODOS
+  todos.forEach((todo, index) => {
+    todosListEl.innerHTML += `
+    <div class="todo" id=${index}>
+      <i 
+        class="bi ${todo.checked ? "bi-check-circle-fill" : "bi-circle"}"
+        style="color : ${todo.color}"
+        data-action="check"
+      ></i>
+      <p class="${todo.checked ? "checked" : ""}" data-action="check">${
+      todo.value
+    }</p>
+      <i class="bi bi-pencil-square" data-action="edit"></i>
+      <i class="bi bi-trash" data-action="delete"></i>
+    </div><hr/>
+    `;
+  });
+}
+
+// CLICK EVENT LISTENER FOR ALL THE TODOS
+todosListEl.addEventListener("click", (event) => {
+  const target = event.target;
+  const parentElement = target.parentNode;
+
+  if (parentElement.className !== "todo") return;
+
+  // t o d o id
+  const todo = parentElement;
+  const todoId = Number(todo.id);
+
+  // target action
+  const action = target.dataset.action;
+
+  action === "check" && checkTodo(todoId);
+  action === "edit" && editTodo(todoId);
+  action === "delete" && deleteTodo(todoId);
+});
+
+// CHECK A TODO
+function checkTodo(todoId) {
+  todos = todos.map((todo, index) => ({
+    ...todo,
+    checked: index === todoId ? !todo.checked : todo.checked,
+  }));
+
+  renderTodos();
+  localStorage.setItem("todos", JSON.stringify(todos));
+}
+
+// EDIT A TODO
+function editTodo(todoId) {
+  todoInput.value = todos[todoId].value;
+  EditTodoId = todoId;
+}
+
+// DELETE TODO
+function deleteTodo(todoId) {
+  todos = todos.filter((todo, index) => index !== todoId);
+  EditTodoId = -1;
+
+  // re-render
+  renderTodos();
+  localStorage.setItem("todos", JSON.stringify(todos));
+}
+
+// SHOW A NOTIFICATION
+function showNotification(msg) {
+  // change the message
+  notificationEl.innerHTML = msg;
+
+  // notification enter
+  notificationEl.classList.add("notif-enter");
+
+  // notification leave
+  setTimeout(() => {
+    notificationEl.classList.remove("notif-enter");
+  }, 2000);
+}
