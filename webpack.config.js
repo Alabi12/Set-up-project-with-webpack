@@ -10,6 +10,7 @@ module.exports = {
   devServer: {
     static: "./dist",
   },
+
   plugins: [
     new HtmlWebpackPlugin({
       title: "Output Management",
@@ -23,9 +24,6 @@ module.exports = {
     publicPath: "/",
   },
   devtool: "inline-source-map",
-  devServer: {
-    static: "./dist",
-  },
   module: {
     rules: [
       {
