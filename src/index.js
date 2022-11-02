@@ -20,7 +20,7 @@ const toDoItems = [
   },
 ];
 
-const itemMarkupGen = (data) => {
+const MarkupGenerator = (data) => {
   return `<li class="todo" data-index="${data.index}" data-completed="${data.completed}"> 
   <input type="checkbox" id="${data.index}" name="${data.index}" value="Bike">
   <label for="${data.index}"> ${data.description} <i
@@ -28,16 +28,16 @@ const itemMarkupGen = (data) => {
   </li>`;
 };
 
-const populateList = (arr) => {
+const allListItems = (arr) => {
   let listString = "";
 
   const sortedArr = arr.sort((a, b) => a.index - b.index);
 
   sortedArr.forEach((item) => {
-    listString += itemMarkupGen(item);
+    listString += MarkupGenerator(item);
   });
 
   todoContainer.innerHTML = listString;
 };
 
-populateList(toDoItems);
+allListItems(toDoItems);
