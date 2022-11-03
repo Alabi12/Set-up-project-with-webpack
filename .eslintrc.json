@@ -3,7 +3,6 @@
     "browser": true,
     "es6": true,
     "jest": true,
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }]
   },
   "parser": "babel-eslint",
   "parserOptions": {
@@ -26,5 +25,6 @@
       }
     ]
   },
-  "ignorePatterns": ["dist/", "build/"]
+  "ignorePatterns": ["dist/", "build/"],
+  "import/no-extraneous-dependencies": ["error", { "devDependencies": true }]
 }
