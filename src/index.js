@@ -1,37 +1,43 @@
-import _ from "lodash";
 import "./style.css";
-import Icon from "./icon.png";
-import Data from "./data.xml";
-import Notes from "./data.csv";
-import toml from './data.toml';
-import yaml from './data.yaml';
-import json from './data.json5';
 
-console.log(toml.title); // output `TOML Example`
-console.log(toml.owner.name); // output `Tom Preston-Werner`
+const todoContainer = document.querySelector(".todo-list");
 
-console.log(yaml.title); // output `YAML Example`
-console.log(yaml.owner.name); // output `Tom Preston-Werner`
+const toDoItems = [
+  {
+    description: "My first to do",
+    completed: false,
+    index: 0,
+  },
+  {
+    description: "My second to do",
+    completed: false,
+    index: 1,
+  },
+  {
+    description: "My third to do",
+    completed: false,
+    index: 2,
+  },
+];
 
-console.log(json.title); // output `JSON5 Example`
-console.log(json.owner.name); // output `Tom Preston-Werner`
+const MarkupGenerator = (data) => {
+  return `<li class="todo" data-index="${data.index}" data-completed="${data.completed}"> 
+  <input type="checkbox" id="${data.index}" name="${data.index}" value="Bike">
+  <label for="${data.index}"> ${data.description} <i
+          class="fa-list-icon fa-solid fa-ellipsis-vertical"></i></label>
+  </li>`;
+};
 
-function component() {
-  const element = document.createElement("div");
+const allListItems = (arr) => {
+  let listString = "";
 
-  // Lodash, now imported by this script
-  element.innerHTML = _.join(["Hello", "webpack"], " ");
-  element.classList.add("hello");
-  // Add the image to our existing div.
-  const myIcon = new Image();
-  myIcon.src = Icon;
+  const sortedArr = arr.sort((a, b) => a.index - b.index);
 
-  element.appendChild(myIcon);
+  sortedArr.forEach((item) => {
+    listString += MarkupGenerator(item);
+  });
 
-  console.log(Data);
-  console.log(Notes);
+  todoContainer.innerHTML = listString;
+};
 
-  return element;
-}
-
-document.body.appendChild(component());
+allListItems(toDoItems);
