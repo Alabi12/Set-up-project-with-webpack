@@ -1,4 +1,4 @@
-# Awesome Books
+# Todo List - Setup with Webpack
 
 > This is a simple project that allow the user to develop the Todo List. The data is persisted in the local storage.
 
@@ -6,8 +6,8 @@
 
 - Html
 - Css
-- JavaScript ES6
-- Webpack for the setup
+- JavaScript
+- Webpack 
 
 ## Live Demo (if available)
 
