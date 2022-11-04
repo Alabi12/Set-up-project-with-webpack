@@ -1,4 +1,5 @@
 import getToDos, { addTodo, deleteToDo, updateTodo } from "./crud.js";
+import checkoffItem from "./interactiveList.js";
 import "./style.css";
 
 const todoContainer = document.querySelector(".todo-list");
